@@ -1,4 +1,4 @@
-module gitlab.com/nest-machine/sysmonitor.git
+module gitlab.com/nest-machine/sysmonitor
 
 go 1.17
 

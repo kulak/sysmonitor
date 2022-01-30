@@ -1,0 +1,5 @@
+{
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/ansible-community/schemas/main/f/ansible-playbook.json": "file:///home/sergei/projs/nest/sysmonitor/push-pb.yaml"
+    }
+}

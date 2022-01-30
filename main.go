@@ -57,8 +57,8 @@ func main() {
 		return
 	}
 
-	report.Groups = append(report.Groups, journalReport())
 	report.Groups = append(report.Groups, btrfsReport(conf)...)
+	report.Groups = append(report.Groups, journalReport())
 
 	var writer io.Writer
 	if writer, err = conf.OutputWriter(); err != nil {
@@ -128,7 +128,7 @@ func (c *Config) OutputWriter() (io.Writer, error) {
 		return os.Stdout, nil
 	}
 	if c.out == nil {
-		fileName := filepath.Join(c.OutputDir, fmt.Sprintf("report-%d.html", time.Now().YearDay()))
+		fileName := filepath.Join(c.OutputDir, fmt.Sprintf("report-%03d.html", time.Now().YearDay()))
 		f, err := os.Create(fileName)
 		if err != nil {
 			return nil, err
