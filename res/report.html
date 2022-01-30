@@ -1,0 +1,35 @@
+{{define "report"}}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <!-- Optimal Internet Explorer compatibility -->
+    <title>Report {{.Now}}</title>
+    <style type="text/css">
+.error {
+    color: red;
+}
+pre {
+    background-color: black;
+    color: lightgreen;
+}
+    </style>
+</head>
+<body>
+    <h1>Report {{.Now}}</h1>
+    {{range $eachGroup := $.Groups}}
+        <h2>{{$eachGroup.Title}}</h2>
+        <p>{{$eachGroup.Description}}</p>
+        {{range $eachMsg := $eachGroup.Msgs}}
+            {{if eq $eachMsg.Kind "code" }}
+                <pre class='{{$eachMsg.Level}}'>{{$eachMsg.Message}}</pre>
+            {{end}}
+            {{if eq $eachMsg.Kind "p" }}
+                <p class='{{$eachMsg.Level}}'>{{$eachMsg.Message}}</p>
+            {{end}}
+    {{end}} {{/* range $eachMsg */}}
+    {{end}} {{/* range $eachMsg */}}
+</body>
+</html>
+{{end}}
