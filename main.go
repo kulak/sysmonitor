@@ -19,14 +19,6 @@ import (
 //go:embed res/*
 var res embed.FS
 
-type Config struct {
-	OutputDir    string   `yaml:"output-dir"`
-	BtrfsDevices []string `yaml:"btrfs-devices"`
-
-	// private state
-	out *os.File
-}
-
 func main() {
 	var err error
 	var report ReportContext
@@ -57,8 +49,18 @@ func main() {
 		return
 	}
 
-	report.Groups = append(report.Groups, btrfsReport(conf)...)
-	report.Groups = append(report.Groups, journalReport())
+	if conf.FeatureEnabled(BtrfsFeature) {
+		report.Groups = append(report.Groups, btrfsReport(conf)...)
+	}
+	if conf.FeatureEnabled(ZfsFeature) {
+		report.Groups = append(report.Groups, zfsReport())
+	}
+	if conf.FeatureEnabled(JournalFeature) {
+		report.Groups = append(report.Groups, journalReport())
+	}
+	if conf.FeatureEnabled(RsyncFeature) {
+		report.Groups = append(report.Groups, rsyncReport(conf)...)
+	}
 
 	var writer io.Writer
 	if writer, err = conf.OutputWriter(); err != nil {
