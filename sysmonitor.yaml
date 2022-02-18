@@ -1,2 +1,17 @@
-output-dir: 
+output-dir: /srv/http/hostname.domain/
 btrfs-devices:
+features:
+  - journal
+  - zfs
+  - rsync
+rsync-args:
+  - -a
+  - --one-file-system
+  - --delete
+rsync-dirs:
+  - use-sudo: true
+    src: /
+    dst: /volumes/backup1/fs/rootfs
+  - use-sudo: true
+    src: /home/
+    dst: /volumes/backup1/fs/home
