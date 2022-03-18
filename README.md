@@ -6,6 +6,12 @@ Report file name is based on the day of the year and can be exposed using web se
 
 The application can be scheduled to run every day using `systemd`.
 
+## Report Example
+
+![report](doc/screenshot-1.png)
+
+Nginx index of reports served by nginx ![index of reports](doc/screenshot-2.png)
+
 ## Commands
 
 ### Build
