@@ -1,0 +1,5 @@
+# Example to check attributes
+# git check-attr -a Taskfile.yml
+
+Taskfile.yml filter=git-crypt diff=git-crypt
+local/** filter=git-crypt diff=git-crypt

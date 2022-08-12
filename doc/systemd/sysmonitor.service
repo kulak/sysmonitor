@@ -1,0 +1,12 @@
+[Unit]
+Description=daily monitor 
+
+Requires=getty.target
+After=getty.target
+
+[Service]
+Type=oneshot
+User=monitor
+Group=monitor
+ExecStart=/usr/local/bin/sysmonitor -cf /usr/local/etc/sysmonitor/sysmonitor.yaml
+WorkingDirectory=

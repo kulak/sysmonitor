@@ -8,11 +8,10 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
-	"path/filepath"
-	"strings"
 	"time"
 
+	"gitlab.com/nest-machine/sysmonitor/core"
+	"gitlab.com/nest-machine/sysmonitor/features"
 	"gopkg.in/yaml.v3"
 )
 
@@ -21,9 +20,9 @@ var res embed.FS
 
 func main() {
 	var err error
-	var report ReportContext
+	var report core.ReportContext
 	report.Now = time.Now()
-	report.Groups = make([]Group, 0)
+	report.Groups = make([]core.Group, 0)
 	var help bool
 	var confFileName string
 	// var dryRun bool
@@ -32,7 +31,7 @@ func main() {
 	flag.StringVar(&confFileName, "cf", "sysmonitor.yaml", "Configuration file name")
 	flag.Parse()
 
-	var conf = &Config{}
+	var conf = &core.Config{}
 	if help {
 		printHelp(conf)
 		return
@@ -49,17 +48,20 @@ func main() {
 		return
 	}
 
-	if conf.FeatureEnabled(BtrfsFeature) {
-		report.Groups = append(report.Groups, btrfsReport(conf)...)
+	if conf.FeatureEnabled(core.BtrfsFeature) {
+		report.Groups = append(report.Groups, features.BtrfsReport(conf)...)
 	}
-	if conf.FeatureEnabled(ZfsFeature) {
-		report.Groups = append(report.Groups, zfsReport())
+	if conf.FeatureEnabled(core.ZfsFeature) {
+		report.Groups = append(report.Groups, features.ZfsReport())
 	}
-	if conf.FeatureEnabled(JournalFeature) {
-		report.Groups = append(report.Groups, journalReport())
+	if conf.FeatureEnabled(core.JournalFeature) {
+		report.Groups = append(report.Groups, features.JournalReport())
 	}
-	if conf.FeatureEnabled(RsyncFeature) {
-		report.Groups = append(report.Groups, rsyncReport(conf)...)
+	if conf.FeatureEnabled(core.RsyncFeature) {
+		report.Groups = append(report.Groups, features.RsyncReport(conf)...)
+	}
+	if conf.FeatureEnabled(core.AppsFeature) {
+		report.Groups = append(report.Groups, features.AppsReport(conf)...)
 	}
 
 	var writer io.Writer
@@ -76,35 +78,7 @@ func main() {
 	}
 }
 
-func execReport(app string, cmdArgs []string, title string) Group {
-	var msgs []Message
-	cmd := exec.Command(app, cmdArgs...)
-	var out []byte
-	var err error
-	if out, err = cmd.CombinedOutput(); err != nil {
-		msgs = append(msgs, Msg(err.Error(), errorLvl, p))
-		if len(out) > 0 {
-			msgs = append(msgs, Msg(string(out), errorLvl, code))
-		}
-	} else {
-		msgs = append(msgs, Msg(string(out), infoLvl, code))
-	}
-	return Group{
-		Title:       title,
-		Description: fmt.Sprintf("%s %s", app, strings.Join(quote(cmd.Args), " ")),
-		Msgs:        msgs,
-	}
-}
-
-func quote(strs []string) []string {
-	var rv []string
-	for _, each := range strs {
-		rv = append(rv, fmt.Sprintf("'%s'", each))
-	}
-	return rv
-}
-
-func printHelp(conf *Config) {
+func printHelp(conf *core.Config) {
 	var err error
 	fmt.Printf("Usage: %s [OPTIONS]\n", os.Args[0])
 	flag.PrintDefaults()
@@ -117,33 +91,10 @@ func printHelp(conf *Config) {
 	fmt.Println()
 }
 
-func loadConfig(fileName string, target *Config) error {
+func loadConfig(fileName string, target *core.Config) error {
 	content, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return err
 	}
 	return yaml.Unmarshal(content, target)
-}
-
-func (c *Config) OutputWriter() (io.Writer, error) {
-	if c.OutputDir == "" {
-		return os.Stdout, nil
-	}
-	if c.out == nil {
-		fileName := filepath.Join(c.OutputDir, fmt.Sprintf("report-%03d.html", time.Now().YearDay()))
-		f, err := os.Create(fileName)
-		if err != nil {
-			return nil, err
-		}
-		c.out = f
-	}
-	return c.out, nil
-}
-
-func (c *Config) CloseOutputWriter() {
-	if c.out == nil {
-		return
-	}
-	c.out.Close()
-	c.out = nil
 }

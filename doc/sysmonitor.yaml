@@ -15,3 +15,9 @@ rsync-dirs:
   - use-sudo: true
     src: /home/
     dst: /volumes/backup1/fs/home
+apps:
+  - description: application description
+    app: /path/to/binary-or-script
+    args:
+    - 1st argument
+    - 2nd-argument

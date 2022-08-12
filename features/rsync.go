@@ -1,9 +1,13 @@
-package main
+package features
 
-import "fmt"
+import (
+	"fmt"
 
-func rsyncReport(conf *Config) []Group {
-	var groups []Group
+	"gitlab.com/nest-machine/sysmonitor/core"
+)
+
+func RsyncReport(conf *core.Config) []core.Group {
+	var groups []core.Group
 	for _, pair := range conf.RsyncDirs {
 		var cmdArgs []string
 		app := "rsync"
@@ -14,7 +18,7 @@ func rsyncReport(conf *Config) []Group {
 		cmdArgs = append(cmdArgs, conf.RsyncArgs...)
 		cmdArgs = append(cmdArgs, pair.Src)
 		cmdArgs = append(cmdArgs, pair.Dst)
-		groups = append(groups, execReport(app, cmdArgs, fmt.Sprintf("Backup %s to %s", pair.Src, pair.Dst)))
+		groups = append(groups, core.ExecReport(app, cmdArgs, fmt.Sprintf("Backup %s to %s", pair.Src, pair.Dst)))
 	}
 	return groups
 }

@@ -12,12 +12,12 @@ The application can be scheduled to run every day using `systemd`.
 
 Nginx index of reports served by nginx ![index of reports](doc/screenshot-2.png)
 
+## Configuration Example
+
+See example [sysmonitor.yaml](doc/sysmonitor.yaml) file.
+
 ## Commands
 
 ### Build
 
     go build .
-
-## Deployment Example
-
-    ansible-playbook push-pb.yaml -K
