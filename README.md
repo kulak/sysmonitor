@@ -21,3 +21,7 @@ See example [sysmonitor.yaml](doc/sysmonitor.yaml) file.
 ### Build
 
     go build .
+
+## Encrypted Files
+
+Some environment specific files are protected with [git-crypt](https://www.agwa.name/projects/git-crypt/) in [.gitattributes](.gitattributes) file.
